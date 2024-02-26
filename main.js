@@ -27,18 +27,26 @@ const SHAPES = [
   [
     [0, 1, 0],
     [0, 1, 0],
-  ]
+  ],
 ];
 
-const COLORS = ["#fff", "#FF00FF", "#16a4d8", "#60dbe8", "#FF0000","#FFFF00","#008000"];
+const COLORS = [
+  "#fff",
+  "#FF00FF",
+  "#16a4d8",
+  "#60dbe8",
+  "#FF0000",
+  "#FFFF00",
+  "#008000",
+];
 
 const ROWS = 17;
-const COLS = 10; 
+const COLS = 10;
 
-let scoreBoard = document.querySelector("#score")
+let scoreBoard = document.querySelector("#score");
 let canvas = document.querySelector("#tetris");
 let ctx = canvas.getContext("2d");
-ctx.scale(30, 30);    //17(rows)*30(px) = 510px (height of canvas)
+ctx.scale(30, 30); //17(rows)*30(px) = 510px (height of canvas)
 
 let piecesObj = null;
 let grid = gridGenrate();
@@ -46,7 +54,7 @@ let score = 0;
 //console.log(grid);
 //  console.log(piecesObj)
 
-//...........Generating random tetris pieces, color 
+//...........Generating random tetris pieces, color
 function GenrateRandomPiece() {
   let ran = Math.floor(Math.random() * 6);
   // console.log(SHAPES[ran])
@@ -69,30 +77,30 @@ function newGameState() {
 }
 
 //...............checking the filled rows
-function checkGrid(){
+function checkGrid() {
   let count = 0;
-  for(let i=0; i<grid.length; i++){
+  for (let i = 0; i < grid.length; i++) {
     let filledRow = true;
-    for(let j=0; j<grid[i].length; j++){
-      if(grid[i][j]==0){
+    for (let j = 0; j < grid[i].length; j++) {
+      if (grid[i][j] == 0) {
         filledRow = false;
       }
     }
-    if(filledRow){
-      grid.splice(i, 1)  //.........removing the ith row
-      grid.unshift([0,0,0,0,0,0,0,0,0,0])
-      count ++
+    if (filledRow) {
+      grid.splice(i, 1); //.........removing the ith row
+      grid.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+      count++;
     }
   }
   //......................conditions for score update
-  if(count == 1){
-    score+=10;
-  }else if(count == 2){
-    score+=30;
-  }else if(count == 3){
-    score+=50;
-  }else if(count > 3){
-    score+=100;
+  if (count == 1) {
+    score += 10;
+  } else if (count == 2) {
+    score += 30;
+  } else if (count == 3) {
+    score += 50;
+  } else if (count > 3) {
+    score += 100;
   }
   scoreBoard.innerHTML = "Score:" + score;
 }
@@ -113,21 +121,21 @@ function renderPiece() {
 //.................functions for moving pieces left right.....................
 function MoveDown() {
   //   console.log("hello");
-  if (!collision(piecesObj.x, piecesObj.y + 1)) 
-  piecesObj.y += 1;
-  else{                          //.......jab piece collide krega bottom m tb hum uska color fix kr rahe hai grid m.
-    for(let i=0; i<piecesObj.piece.length; i++){
-      for(let j=0; j<piecesObj.piece[i].length; j++){
-        if(piecesObj.piece[i][j] == 1){
-          let c = piecesObj.x+j;
-          let r = piecesObj.y+i;
+  if (!collision(piecesObj.x, piecesObj.y + 1)) piecesObj.y += 1;
+  else {
+    //.......jab piece collide krega bottom m tb hum uska color fix kr rahe hai grid m.
+    for (let i = 0; i < piecesObj.piece.length; i++) {
+      for (let j = 0; j < piecesObj.piece[i].length; j++) {
+        if (piecesObj.piece[i][j] == 1) {
+          let c = piecesObj.x + j;
+          let r = piecesObj.y + i;
           grid[r][c] = piecesObj.colorIndex;
         }
       }
     }
-    if(piecesObj.y == 0){
-      alert ("Game Over")
-      grid = gridGenrate()
+    if (piecesObj.y == 0) {
+      alert("Game Over");
+      grid = gridGenrate();
       score = 0;
     }
     piecesObj = null;
@@ -156,7 +164,7 @@ function collision(x, y) {
         let c = x + j;
         let r = y + i;
         if (c >= 0 && c < COLS && r >= 0 && r < ROWS) {
-          if(grid[r][c]>0){
+          if (grid[r][c] > 0) {
             return true;
           }
         } else {
@@ -195,7 +203,7 @@ function renderGrid() {
 document.addEventListener("keydown", (e) => {
   // console.log(e)
   let key = e.code;
-  console.log(key);
+  //console.log(key);
   if (key == "ArrowDown") {
     MoveDown();
   } else if (key == "ArrowLeft") {
@@ -204,3 +212,19 @@ document.addEventListener("keydown", (e) => {
     moveRight();
   }
 });
+let leftButton = document.querySelector(".left");
+let rightButton = document.querySelector(".right");
+
+leftButton.addEventListener("click", () => {
+  //console.log("Left is active")
+  if (!collision(piecesObj.x - 1, piecesObj.y))
+    //........................checks if there is not collision
+    piecesObj.x -= 1;
+  renderGrid();
+});
+
+rightButton.addEventListener("click", ()=>{
+  //console.log("Right is active")
+  if (!collision(piecesObj.x + 1, piecesObj.y)) piecesObj.x += 1;
+  renderGrid();
+})
